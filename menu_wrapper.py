@@ -131,9 +131,9 @@ def apply_menu_wrapper(bot_instance):
         original_method = bot_instance.show_main_menu
         wrapped_method = wrap_main_menu(original_method)
         
-        # Bind the wrapped method to the instance
-        import types
-        bot_instance.show_main_menu = types.MethodType(wrapped_method, bot_instance)
+        # Replace the method directly (the wrapped_method already has self parameter)
+        # No need for types.MethodType since wrapped_method is already a function with self
+        bot_instance.show_main_menu = wrapped_method.__get__(bot_instance, type(bot_instance))
         
         logger.info("✅ Main menu (show_main_menu) wrapped with language support")
     else:

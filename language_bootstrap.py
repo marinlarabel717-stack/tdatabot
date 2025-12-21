@@ -68,6 +68,9 @@ def inject_language_system():
     
     This function patches the EnhancedBot.__init__ method to automatically
     initialize the language system when the bot starts.
+    
+    Handles failures gracefully - if language system fails to load,
+    the bot will still start normally without language support.
     """
     try:
         # Import the main module
@@ -85,9 +88,18 @@ def inject_language_system():
             # Call original __init__
             original_init(self, *args, **kwargs)
             
-            # Bootstrap language system
+            # Bootstrap language system (with graceful failure handling)
             logger.info("🌐 Starting language system bootstrap...")
-            bootstrap_language_system(self)
+            try:
+                success = bootstrap_language_system(self)
+                if not success:
+                    logger.warning("⚠️ Language system bootstrap failed, bot will continue without language support")
+            except Exception as e:
+                logger.error(f"❌ Language system bootstrap error: {e}")
+                logger.warning("⚠️ Bot will continue without language support")
+                import traceback
+                traceback.print_exc()
+                # Don't re-raise - allow bot to continue
         
         # Replace __init__
         EnhancedBot.__init__ = wrapped_init
@@ -97,6 +109,7 @@ def inject_language_system():
         
     except Exception as e:
         logger.error(f"❌ Failed to inject language system: {e}")
+        logger.warning("⚠️ Bot will start without language support")
         import traceback
         traceback.print_exc()
         return False
