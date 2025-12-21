@@ -7,8 +7,19 @@ Non-intrusive integration of language switching functionality
 
 import logging
 from typing import Optional
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackContext, CallbackQueryHandler
+
+# Import telegram modules if available (optional for testing)
+try:
+    from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+    from telegram.ext import CallbackContext, CallbackQueryHandler
+    TELEGRAM_AVAILABLE = True
+except ImportError:
+    Update = Any = object
+    InlineKeyboardButton = object
+    InlineKeyboardMarkup = object
+    CallbackContext = object
+    CallbackQueryHandler = object
+    TELEGRAM_AVAILABLE = False
 
 from language_manager import get_language_manager
 from language_middleware import get_middleware

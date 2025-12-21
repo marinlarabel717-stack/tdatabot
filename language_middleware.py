@@ -9,8 +9,16 @@ import logging
 import sqlite3
 from typing import Callable, Optional, Any
 from functools import wraps
-from telegram import Update
-from telegram.ext import CallbackContext
+
+# Import telegram modules if available (optional for testing)
+try:
+    from telegram import Update
+    from telegram.ext import CallbackContext
+    TELEGRAM_AVAILABLE = True
+except ImportError:
+    Update = Any
+    CallbackContext = Any
+    TELEGRAM_AVAILABLE = False
 
 from language_manager import get_language_manager
 

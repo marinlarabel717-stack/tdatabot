@@ -8,8 +8,18 @@ Non-intrusive wrapper that extends the main menu with language selection
 import logging
 from typing import Callable
 from functools import wraps
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackContext
+
+# Import telegram modules if available (optional for testing)
+try:
+    from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+    from telegram.ext import CallbackContext
+    TELEGRAM_AVAILABLE = True
+except ImportError:
+    Update = object
+    InlineKeyboardButton = object
+    InlineKeyboardMarkup = object
+    CallbackContext = object
+    TELEGRAM_AVAILABLE = False
 
 from language_middleware import get_middleware
 
