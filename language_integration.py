@@ -161,18 +161,35 @@ class LanguageIntegration:
             except Exception as e:
                 logger.error(f"❌ Failed to show confirmation: {e}")
             
-            # Return to main menu after a brief delay
-            import time
-            time.sleep(1)
-            
-            # Trigger main menu refresh
+            # Schedule main menu refresh using callback context
+            # This is better than blocking with time.sleep()
             try:
-                # Call the bot's main menu directly
-                self.bot.main_menu(update, context)
+                # Use context.job_queue to schedule a non-blocking callback
+                if hasattr(context, 'job_queue') and context.job_queue:
+                    context.job_queue.run_once(
+                        lambda ctx: self._refresh_main_menu(update, ctx),
+                        1.0,  # 1 second delay
+                        context=context
+                    )
+                else:
+                    # Fallback: immediate refresh if job_queue not available
+                    self.bot.main_menu(update, context)
             except Exception as e:
-                logger.error(f"❌ Failed to refresh main menu: {e}")
+                logger.error(f"❌ Failed to schedule menu refresh: {e}")
+                # Try immediate refresh as final fallback
+                try:
+                    self.bot.main_menu(update, context)
+                except Exception as e2:
+                    logger.error(f"❌ Failed to refresh main menu: {e2}")
         else:
             logger.error("❌ Failed to change language")
+    
+    def _refresh_main_menu(self, update: Update, context: CallbackContext):
+        """Helper method to refresh main menu (used as callback)."""
+        try:
+            self.bot.main_menu(update, context)
+        except Exception as e:
+            logger.error(f"❌ Failed to refresh main menu: {e}")
     
     def get_extended_menu_buttons(self, user_id: int, original_buttons: list) -> list:
         """
