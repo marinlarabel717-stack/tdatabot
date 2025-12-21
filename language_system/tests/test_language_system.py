@@ -10,8 +10,9 @@ import sys
 import tempfile
 import sqlite3
 
-# Add current directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add parent directory (language_system) to path
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, parent_dir)
 
 print("🧪 Testing Language System")
 print("=" * 50)
@@ -21,7 +22,9 @@ print("\n1️⃣ Testing Language Manager...")
 try:
     from language_manager import LanguageManager
     
-    lang_manager = LanguageManager(lang_dir="lang", default_lang="en")
+    # Update lang_dir path to point to correct location
+    lang_dir = os.path.join(parent_dir, "lang")
+    lang_manager = LanguageManager(lang_dir=lang_dir, default_lang="en")
     
     # Check supported languages
     print(f"   Supported languages: {lang_manager.supported_languages}")

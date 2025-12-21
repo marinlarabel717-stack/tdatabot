@@ -22,8 +22,13 @@ except ImportError:
     TELEGRAM_AVAILABLE = False
     Any = object
 
-from language_manager import get_language_manager
-from language_middleware import get_middleware
+# Import modules - try relative import first, then absolute
+try:
+    from .language_manager import get_language_manager
+    from .language_middleware import get_middleware
+except ImportError:
+    from language_manager import get_language_manager
+    from language_middleware import get_middleware
 
 logger = logging.getLogger(__name__)
 

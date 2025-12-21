@@ -8,8 +8,13 @@ This script initializes the language system before starting the bot
 import sys
 import os
 
-# Ensure the current directory is in the path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add parent directory to path so we can import tdata
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, parent_dir)
+
+# Add current directory to path for language_system imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
 
 print("🌐 ===== TDataBot with Language Support =====")
 print("🌐 Initializing language system...")

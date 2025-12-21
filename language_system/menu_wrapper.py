@@ -21,7 +21,11 @@ except ImportError:
     CallbackContext = object
     TELEGRAM_AVAILABLE = False
 
-from language_middleware import get_middleware
+# Import middleware - try relative import first, then absolute
+try:
+    from .language_middleware import get_middleware
+except ImportError:
+    from language_middleware import get_middleware
 
 logger = logging.getLogger(__name__)
 

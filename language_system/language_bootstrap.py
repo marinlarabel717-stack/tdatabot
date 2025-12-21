@@ -27,11 +27,17 @@ def bootstrap_language_system(bot_instance):
         True if successful, False otherwise
     """
     try:
-        # Import modules
-        from language_manager import get_language_manager
-        from language_middleware import get_middleware
-        from language_integration import setup_language_integration
-        from menu_wrapper import apply_menu_wrapper
+        # Import modules - try relative import first, then absolute
+        try:
+            from .language_manager import get_language_manager
+            from .language_middleware import get_middleware
+            from .language_integration import setup_language_integration
+            from .menu_wrapper import apply_menu_wrapper
+        except ImportError:
+            from language_manager import get_language_manager
+            from language_middleware import get_middleware
+            from language_integration import setup_language_integration
+            from menu_wrapper import apply_menu_wrapper
         
         # 1. Initialize language manager
         lang_manager = get_language_manager()
@@ -73,6 +79,13 @@ def inject_language_system():
     the bot will still start normally without language support.
     """
     try:
+        # Add parent directory to path to import tdata
+        import os
+        import sys
+        parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if parent_dir not in sys.path:
+            sys.path.insert(0, parent_dir)
+        
         # Import the main module
         import tdata
         

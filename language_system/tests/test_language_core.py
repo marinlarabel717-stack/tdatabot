@@ -9,7 +9,9 @@ import sys
 import tempfile
 import sqlite3
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add parent directory (language_system) to path
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, parent_dir)
 
 print("🧪 Language System Core Tests")
 print("=" * 60)
@@ -19,7 +21,9 @@ def test_language_manager():
     print("\n✅ Test 1: Language Manager")
     from language_manager import LanguageManager
     
-    lm = LanguageManager(lang_dir="lang", default_lang="en")
+    # Update lang_dir path to point to correct location
+    lang_dir = os.path.join(parent_dir, "lang")
+    lm = LanguageManager(lang_dir=lang_dir, default_lang="en")
     
     # Test 1: Check languages loaded
     assert len(lm.supported_languages) >= 2, "Should load at least 2 languages"
@@ -145,8 +149,9 @@ def test_translation_completeness():
         'common': ['yes', 'no', 'cancel']
     }
     
+    lang_dir = os.path.join(parent_dir, "lang")
     for lang_code in ['en', 'zh']:
-        lang_file = f"lang/{lang_code}.json"
+        lang_file = os.path.join(lang_dir, f"{lang_code}.json")
         with open(lang_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
         

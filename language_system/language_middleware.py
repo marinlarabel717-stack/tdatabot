@@ -20,7 +20,11 @@ except ImportError:
     CallbackContext = Any
     TELEGRAM_AVAILABLE = False
 
-from language_manager import get_language_manager
+# Import language_manager - try relative import first, then absolute
+try:
+    from .language_manager import get_language_manager
+except ImportError:
+    from language_manager import get_language_manager
 
 logger = logging.getLogger(__name__)
 

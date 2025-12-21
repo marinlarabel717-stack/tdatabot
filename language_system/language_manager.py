@@ -25,14 +25,21 @@ class LanguageManager:
     - Runtime language switching
     """
     
-    def __init__(self, lang_dir: str = "lang", default_lang: str = "en"):
+    def __init__(self, lang_dir: str = None, default_lang: str = "en"):
         """
         Initialize the language manager.
         
         Args:
-            lang_dir: Directory containing language JSON files
+            lang_dir: Directory containing language JSON files.
+                     If None, auto-detects based on module location.
             default_lang: Default language code (fallback)
         """
+        # Auto-detect lang_dir if not provided
+        if lang_dir is None:
+            # Get the directory where this module is located
+            module_dir = Path(__file__).parent
+            lang_dir = module_dir / "lang"
+        
         self.lang_dir = Path(lang_dir)
         self.default_lang = default_lang
         self.languages: Dict[str, Dict[str, Any]] = {}
