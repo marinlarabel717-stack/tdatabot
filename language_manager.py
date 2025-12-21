@@ -157,15 +157,17 @@ class LanguageManager:
         Returns:
             Native language name
         """
+        # Only include languages that have translation files
         names = {
             'en': 'English',
             'zh': '中文',
             'ru': 'Русский',
-            'es': 'Español',
-            'fr': 'Français',
-            'de': 'Deutsch',
-            'ja': '日本語',
-            'ko': '한국어',
+            # TODO: Add more languages below as translation files are created
+            # 'es': 'Español',
+            # 'fr': 'Français',
+            # 'de': 'Deutsch',
+            # 'ja': '日本語',
+            # 'ko': '한국어',
         }
         return names.get(lang_code, lang_code.upper())
     

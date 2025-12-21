@@ -177,12 +177,13 @@ class LanguageIntegration:
                             # Create a minimal Update object for the callback
                             # We only need the callback_query with message info
                             from telegram import Message, Chat, CallbackQuery
+                            from datetime import datetime
                             
                             # Create minimal objects needed for show_main_menu
                             chat = Chat(id=stored_chat_id, type='private')
                             message = Message(
                                 message_id=stored_message_id,
-                                date=None,
+                                date=datetime.now(),  # Use current time for callback
                                 chat=chat
                             )
                             callback_query = CallbackQuery(
@@ -194,9 +195,11 @@ class LanguageIntegration:
                             )
                             
                             # Create new Update with fresh callback_query
+                            # Use timestamp-based update_id to avoid conflicts
                             from telegram import Update as TelegramUpdate
+                            import time
                             fresh_update = TelegramUpdate(
-                                update_id=0,
+                                update_id=int(time.time() * 1000),  # Timestamp-based unique ID
                                 callback_query=callback_query
                             )
                             

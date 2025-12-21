@@ -131,8 +131,10 @@ def apply_menu_wrapper(bot_instance):
         original_method = bot_instance.show_main_menu
         wrapped_method = wrap_main_menu(original_method)
         
-        # Replace the method directly (the wrapped_method already has self parameter)
-        # No need for types.MethodType since wrapped_method is already a function with self
+        # Replace the method using descriptor protocol
+        # We use __get__ instead of types.MethodType to properly bind the method
+        # without causing double-binding issues. The wrapped_method already has
+        # 'self' as a parameter, so __get__ correctly binds it to the instance.
         bot_instance.show_main_menu = wrapped_method.__get__(bot_instance, type(bot_instance))
         
         logger.info("✅ Main menu (show_main_menu) wrapped with language support")
