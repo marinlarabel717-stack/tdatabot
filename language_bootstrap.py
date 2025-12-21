@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Language System Bootstrap
+This module initializes the language system and patches the bot
+"""
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def bootstrap_language_system(bot_instance):
+    """
+    Bootstrap the complete language system for the bot.
+    
+    This function:
+    1. Initializes the language manager
+    2. Sets up the middleware
+    3. Registers language handlers
+    4. Wraps the main menu
+    
+    Args:
+        bot_instance: EnhancedBot instance to enhance
+        
+    Returns:
+        True if successful, False otherwise
+    """
+    try:
+        # Import modules
+        from language_manager import get_language_manager
+        from language_middleware import get_middleware
+        from language_integration import setup_language_integration
+        from menu_wrapper import apply_menu_wrapper
+        
+        # 1. Initialize language manager
+        lang_manager = get_language_manager()
+        logger.info(f"✅ Language manager initialized with {len(lang_manager.supported_languages)} languages")
+        
+        # 2. Initialize middleware
+        middleware = get_middleware()
+        logger.info("✅ Language middleware initialized")
+        
+        # 3. Setup integration (registers handlers)
+        integration = setup_language_integration(bot_instance)
+        logger.info("✅ Language integration setup complete")
+        
+        # 4. Wrap main menu
+        apply_menu_wrapper(bot_instance)
+        logger.info("✅ Main menu wrapped with language support")
+        
+        logger.info("🌐 ===== Language System Bootstrap Complete =====")
+        logger.info(f"🌐 Supported languages: {', '.join(lang_manager.supported_languages)}")
+        logger.info("🌐 =============================================")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ Failed to bootstrap language system: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
+def inject_language_system():
+    """
+    Inject the language system into the bot startup process.
+    
+    This function patches the EnhancedBot.__init__ method to automatically
+    initialize the language system when the bot starts.
+    """
+    try:
+        # Import the main module
+        import tdata
+        
+        # Get the EnhancedBot class
+        if not hasattr(tdata, 'EnhancedBot'):
+            logger.warning("⚠️ EnhancedBot class not found")
+            return False
+        
+        EnhancedBot = tdata.EnhancedBot
+        original_init = EnhancedBot.__init__
+        
+        def wrapped_init(self, *args, **kwargs):
+            # Call original __init__
+            original_init(self, *args, **kwargs)
+            
+            # Bootstrap language system
+            logger.info("🌐 Starting language system bootstrap...")
+            bootstrap_language_system(self)
+        
+        # Replace __init__
+        EnhancedBot.__init__ = wrapped_init
+        
+        logger.info("✅ Language system injection complete")
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ Failed to inject language system: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
+# Auto-inject when this module is imported
+if __name__ != "__main__":
+    # Only inject if not running as main script
+    inject_language_system()

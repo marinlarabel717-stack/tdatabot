@@ -1,0 +1,53 @@
+{
+  "menu": {
+    "welcome": "🤖 Welcome to the Telegram Account Detection Bot",
+    "select_language": "🌐 Select Language",
+    "account_check": "🚀 Account Check",
+    "format_conversion": "🔄 Format Conversion",
+    "change_2fa": "🔐 Change 2FA",
+    "batch_create": "📦 Batch Create",
+    "forget_2fa": "🔓 Forget 2FA",
+    "remove_2fa": "❌ Remove 2FA",
+    "add_2fa": "➕ Add 2FA",
+    "classify_account": "📦 Account Classification",
+    "api_conversion": "🔗 API Conversion",
+    "file_rename": "📝 File Rename",
+    "account_merge": "🧩 Account Merge",
+    "one_click_cleanup": "🧹 One-Click Cleanup",
+    "reauthorize": "🔑 Reauthorize",
+    "check_registration": "🕰️ Check Registration Time",
+    "vip_menu": "💳 VIP Membership",
+    "admin_panel": "👑 Admin Panel",
+    "proxy_management": "📡 Proxy Management",
+    "status": "⚙️ Status",
+    "back_to_main": "🔙 Back to Main Menu"
+  },
+  "language": {
+    "changed": "✅ Language changed to English",
+    "current": "Current language: English",
+    "select_prompt": "🌐 Please select your language:",
+    "available": "Available languages"
+  },
+  "status": {
+    "version": "Version",
+    "current_time": "Current Time",
+    "user_status": "User Status",
+    "vip_status": "VIP Status",
+    "trial_user": "Trial User",
+    "trial_expires": "Trial expires",
+    "permanent_vip": "Permanent VIP",
+    "vip_expires": "VIP expires",
+    "normal_user": "Normal User"
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "success": "Success",
+    "failed": "Failed",
+    "error": "Error",
+    "loading": "Loading...",
+    "please_wait": "Please wait..."
+  }
+}
