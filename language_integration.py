@@ -6,7 +6,7 @@ Non-intrusive integration of language switching functionality
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 # Import telegram modules if available (optional for testing)
 try:
@@ -14,12 +14,13 @@ try:
     from telegram.ext import CallbackContext, CallbackQueryHandler
     TELEGRAM_AVAILABLE = True
 except ImportError:
-    Update = Any = object
+    Update = object
     InlineKeyboardButton = object
     InlineKeyboardMarkup = object
     CallbackContext = object
     CallbackQueryHandler = object
     TELEGRAM_AVAILABLE = False
+    Any = object
 
 from language_manager import get_language_manager
 from language_middleware import get_middleware
@@ -163,31 +164,41 @@ class LanguageIntegration:
             
             # Schedule main menu refresh using callback context
             # This is better than blocking with time.sleep()
+            # We need to store user_id to avoid stale update objects
+            stored_user_id = user_id
+            
             try:
                 # Use context.job_queue to schedule a non-blocking callback
                 if hasattr(context, 'job_queue') and context.job_queue:
+                    def refresh_callback(ctx):
+                        """Callback to refresh menu with correct method."""
+                        try:
+                            # Call show_main_menu with correct parameters
+                            self.bot.show_main_menu(update, stored_user_id)
+                        except Exception as e:
+                            logger.error(f"❌ Failed to refresh main menu in callback: {e}")
+                    
                     context.job_queue.run_once(
-                        lambda ctx: self._refresh_main_menu(update, ctx),
+                        refresh_callback,
                         1.0,  # 1 second delay
-                        context=context
                     )
                 else:
                     # Fallback: immediate refresh if job_queue not available
-                    self.bot.main_menu(update, context)
+                    self.bot.show_main_menu(update, user_id)
             except Exception as e:
                 logger.error(f"❌ Failed to schedule menu refresh: {e}")
                 # Try immediate refresh as final fallback
                 try:
-                    self.bot.main_menu(update, context)
+                    self.bot.show_main_menu(update, user_id)
                 except Exception as e2:
                     logger.error(f"❌ Failed to refresh main menu: {e2}")
         else:
             logger.error("❌ Failed to change language")
     
-    def _refresh_main_menu(self, update: Update, context: CallbackContext):
+    def _refresh_main_menu(self, update: Update, user_id: int):
         """Helper method to refresh main menu (used as callback)."""
         try:
-            self.bot.main_menu(update, context)
+            self.bot.show_main_menu(update, user_id)
         except Exception as e:
             logger.error(f"❌ Failed to refresh main menu: {e}")
     

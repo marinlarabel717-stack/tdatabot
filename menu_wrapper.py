@@ -28,32 +28,39 @@ logger = logging.getLogger(__name__)
 
 def wrap_main_menu(original_main_menu: Callable) -> Callable:
     """
-    Wrap the original main_menu function to add language support.
+    Wrap the original show_main_menu function to add language support.
     
     This wrapper:
-    1. Calls the original main_menu function
+    1. Calls the original show_main_menu function
     2. Intercepts before the message is sent
     3. Adds language selection button
     4. Translates menu items if possible
     
+    Note: The actual method in tdata.py is show_main_menu(update, user_id)
+    
     Args:
-        original_main_menu: Original main_menu method
+        original_main_menu: Original show_main_menu method
         
     Returns:
-        Wrapped main_menu function
+        Wrapped show_main_menu function
     """
     @wraps(original_main_menu)
-    def wrapped_main_menu(self, update: Update, context: CallbackContext):
-        # Get user ID
-        user_id = None
-        if update.effective_user:
-            user_id = update.effective_user.id
-        elif update.callback_query and update.callback_query.from_user:
-            user_id = update.callback_query.from_user.id
+    def wrapped_main_menu(self, update: Update, user_id: int):
+        """
+        Wrapped version of show_main_menu that adds language support.
         
+        Note: The signature matches the actual show_main_menu(update, user_id) in tdata.py
+        """
+        # Verify user_id is valid
         if user_id is None:
-            # Fall back to original if we can't get user ID
-            return original_main_menu(self, update, context)
+            # Try to get from update if not provided
+            if update.effective_user:
+                user_id = update.effective_user.id
+            elif update.callback_query and update.callback_query.from_user:
+                user_id = update.callback_query.from_user.id
+            else:
+                # Fall back to original if we can't get user ID
+                return original_main_menu(self, update, user_id)
         
         # Get middleware
         middleware = get_middleware()
@@ -61,7 +68,6 @@ def wrap_main_menu(original_main_menu: Callable) -> Callable:
         
         # Store original method temporarily
         original_edit_method = None
-        original_send_method = None
         
         if update.callback_query:
             query = update.callback_query
@@ -100,8 +106,8 @@ def wrap_main_menu(original_main_menu: Callable) -> Callable:
             query.edit_message_text = wrapped_edit
         
         try:
-            # Call original main_menu
-            result = original_main_menu(self, update, context)
+            # Call original show_main_menu with correct signature
+            result = original_main_menu(self, update, user_id)
             return result
         finally:
             # Restore original methods
@@ -115,19 +121,20 @@ def apply_menu_wrapper(bot_instance):
     """
     Apply the menu wrapper to a bot instance.
     
-    This function patches the bot's main_menu method with our wrapper.
+    This function patches the bot's show_main_menu method with our wrapper.
+    Note: The actual method in tdata.py is 'show_main_menu', not 'main_menu'.
     
     Args:
         bot_instance: EnhancedBot instance to patch
     """
-    if hasattr(bot_instance, 'main_menu'):
-        original_method = bot_instance.main_menu
+    if hasattr(bot_instance, 'show_main_menu'):
+        original_method = bot_instance.show_main_menu
         wrapped_method = wrap_main_menu(original_method)
         
         # Bind the wrapped method to the instance
         import types
-        bot_instance.main_menu = types.MethodType(wrapped_method, bot_instance)
+        bot_instance.show_main_menu = types.MethodType(wrapped_method, bot_instance)
         
-        logger.info("✅ Main menu wrapped with language support")
+        logger.info("✅ Main menu (show_main_menu) wrapped with language support")
     else:
-        logger.warning("⚠️ Bot instance does not have main_menu method")
+        logger.warning("⚠️ Bot instance does not have show_main_menu method")
