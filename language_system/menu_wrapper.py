@@ -64,7 +64,8 @@ def wrap_main_menu(original_main_menu: Callable) -> Callable:
                 user_id = update.callback_query.from_user.id
             else:
                 # Fall back to original if we can't get user ID
-                return original_main_menu(self, update, user_id)
+                # Note: original_main_menu is already a bound method
+                return original_main_menu(update, user_id)
         
         # Get middleware
         middleware = get_middleware()
@@ -110,8 +111,9 @@ def wrap_main_menu(original_main_menu: Callable) -> Callable:
             query.edit_message_text = wrapped_edit
         
         try:
-            # Call original show_main_menu with correct signature
-            result = original_main_menu(self, update, user_id)
+            # Call original show_main_menu
+            # Note: original_main_menu is already a bound method, so we don't pass self
+            result = original_main_menu(update, user_id)
             return result
         finally:
             # Restore original methods
