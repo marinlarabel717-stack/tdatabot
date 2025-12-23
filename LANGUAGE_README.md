@@ -4,14 +4,14 @@ The language switching system files have been organized into the `language_syste
 
 ## Starting the Bot with Language Support
 
-```bash
-# From the root directory
-python language_system/start_with_language.py
+**The language system is now automatically integrated!** Simply start the bot normally:
 
-# Or navigate to the language_system directory first
-cd language_system
-python start_with_language.py
+```bash
+# Start the bot directly - language system loads automatically
+python tdata.py
 ```
+
+The language system will automatically initialize when `tdata.py` starts. No special launcher script is needed.
 
 ## Directory Structure
 
@@ -59,7 +59,7 @@ python test_language_core.py
 - 🌐 Multi-language support (English, Chinese, Russian)
 - 💾 Persistent user preferences
 - 🔄 Non-blocking UI updates
-- 📦 100% non-intrusive design (no modifications to tdata.py)
+- 📦 Automatic integration (language system loads when tdata.py starts)
 - ✨ Easy to extend with new languages
 
 ## Adding a New Language
