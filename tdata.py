@@ -9085,6 +9085,25 @@ class EnhancedBot:
             InlineKeyboardButton("⚙️ 状态", callback_data="status")
         ])
 
+        # 语言切换按钮 (由语言系统添加)
+        try:
+            # 尝试添加语言选择按钮
+            import sys
+            import os
+            language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
+            if language_system_path not in sys.path:
+                sys.path.insert(0, language_system_path)
+            
+            from language_middleware import get_middleware
+            middleware = get_middleware()
+            lang_button_text = middleware.translate_for_user(user_id, "menu.select_language")
+            buttons.append([
+                InlineKeyboardButton(lang_button_text, callback_data="lang_select")
+            ])
+        except Exception as e:
+            # 如果语言系统不可用，静默失败
+            pass
+
         
         keyboard = InlineKeyboardMarkup(buttons)
         
