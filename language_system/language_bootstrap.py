@@ -32,12 +32,12 @@ def bootstrap_language_system(bot_instance):
             from .language_manager import get_language_manager
             from .language_middleware import get_middleware
             from .language_integration import setup_language_integration
-            from .menu_wrapper import apply_menu_wrapper
+            from .language_button_fix import apply_language_button_fix, verify_callback_handlers
         except ImportError:
             from language_manager import get_language_manager
             from language_middleware import get_middleware
             from language_integration import setup_language_integration
-            from menu_wrapper import apply_menu_wrapper
+            from language_button_fix import apply_language_button_fix, verify_callback_handlers
         
         # 1. Initialize language manager
         lang_manager = get_language_manager()
@@ -51,9 +51,13 @@ def bootstrap_language_system(bot_instance):
         integration = setup_language_integration(bot_instance)
         logger.info("✅ Language integration setup complete")
         
-        # 4. Wrap main menu
-        apply_menu_wrapper(bot_instance)
-        logger.info("✅ Main menu wrapped with language support")
+        # 4. Apply enhanced language button fix
+        apply_language_button_fix(bot_instance)
+        logger.info("✅ Enhanced language button fix applied")
+        
+        # 5. Verify callback handlers are registered
+        verify_callback_handlers(bot_instance)
+        logger.info("✅ Callback handlers verified")
         
         logger.info("🌐 ===== Language System Bootstrap Complete =====")
         logger.info(f"🌐 Supported languages: {', '.join(lang_manager.supported_languages)}")
