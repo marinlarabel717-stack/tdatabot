@@ -169,8 +169,8 @@ class LanguageManager:
             'en': 'English',
             'zh': '中文',
             'ru': 'Русский',
+            'es': 'Español',
             # TODO: Add more languages below as translation files are created
-            # 'es': 'Español',
             # 'fr': 'Français',
             # 'de': 'Deutsch',
             # 'ja': '日本語',

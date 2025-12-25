@@ -1,0 +1,53 @@
+{
+  "menu": {
+    "welcome": "🤖 Bienvenido al Bot de Detección de Cuentas de Telegram",
+    "select_language": "🌐 Seleccionar Idioma",
+    "account_check": "🚀 Verificación de Cuenta",
+    "format_conversion": "🔄 Conversión de Formato",
+    "change_2fa": "🔐 Cambiar 2FA",
+    "batch_create": "📦 Creación por Lotes",
+    "forget_2fa": "🔓 Olvidar 2FA",
+    "remove_2fa": "❌ Eliminar 2FA",
+    "add_2fa": "➕ Agregar 2FA",
+    "classify_account": "📦 Clasificación de Cuenta",
+    "api_conversion": "🔗 Conversión de API",
+    "file_rename": "📝 Renombrar Archivo",
+    "account_merge": "🧩 Fusión de Cuentas",
+    "one_click_cleanup": "🧹 Limpieza con Un Clic",
+    "reauthorize": "🔑 Reautorizar",
+    "check_registration": "🕰️ Verificar Tiempo de Registro",
+    "vip_menu": "💳 Membresía VIP",
+    "admin_panel": "👑 Panel de Administrador",
+    "proxy_management": "📡 Gestión de Proxy",
+    "status": "⚙️ Estado",
+    "back_to_main": "🔙 Volver al Menú Principal"
+  },
+  "language": {
+    "changed": "✅ Idioma cambiado a Español",
+    "current": "Idioma actual: Español",
+    "select_prompt": "🌐 Por favor selecciona tu idioma:",
+    "available": "Idiomas disponibles"
+  },
+  "status": {
+    "version": "Versión",
+    "current_time": "Hora Actual",
+    "user_status": "Estado del Usuario",
+    "vip_status": "Estado VIP",
+    "trial_user": "Usuario de Prueba",
+    "trial_expires": "La prueba expira",
+    "permanent_vip": "VIP Permanente",
+    "vip_expires": "VIP expira",
+    "normal_user": "Usuario Normal"
+  },
+  "common": {
+    "yes": "Sí",
+    "no": "No",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "success": "Éxito",
+    "failed": "Fallido",
+    "error": "Error",
+    "loading": "Cargando...",
+    "please_wait": "Por favor espera..."
+  }
+}
