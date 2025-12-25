@@ -21956,30 +21956,6 @@ admin3</code>
             print(f"\n❌ 运行错误: {e}")
 
 # ================================
-# 语言系统注入 (在 EnhancedBot 类定义后)
-# ================================
-print("🔧 开始语言系统注入...")
-try:
-    import sys
-    language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
-    if language_system_path not in sys.path:
-        sys.path.insert(0, language_system_path)
-    print(f"🔧 语言系统路径: {language_system_path}")
-    
-    from language_bootstrap import inject_language_system
-    print("🔧 导入 inject_language_system 成功")
-    result = inject_language_system()
-    print(f"🔧 注入结果: {result}")
-    if result:
-        print("✅ 语言系统注入完成")
-    else:
-        print("⚠️ 语言系统注入返回False")
-except Exception as e:
-    print(f"⚠️ 语言系统注入失败: {e}")
-    import traceback
-    traceback.print_exc()
-
-# ================================
 # 创建示例代理文件
 # ================================
 
@@ -22078,6 +22054,28 @@ def main():
     print("🔍 Telegram账号检测机器人 V8.0")
     print("⚡ 群发通知完整版")
     print("=" * 50)
+    
+    # 语言系统注入 (在 main 函数中调用，此时 tdata 已在 sys.modules)
+    print("🔧 开始语言系统注入...")
+    try:
+        import sys
+        language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
+        if language_system_path not in sys.path:
+            sys.path.insert(0, language_system_path)
+        print(f"🔧 语言系统路径: {language_system_path}")
+        
+        from language_bootstrap import inject_language_system
+        print("🔧 导入 inject_language_system 成功")
+        result = inject_language_system()
+        print(f"🔧 注入结果: {result}")
+        if result:
+            print("✅ 语言系统注入完成")
+        else:
+            print("⚠️ 语言系统注入返回False")
+    except Exception as e:
+        print(f"⚠️ 语言系统注入失败: {e}")
+        import traceback
+        traceback.print_exc()
     
     # 设置session目录并清理残留文件
     setup_session_directory()

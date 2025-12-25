@@ -97,41 +97,23 @@ def inject_language_system():
     Handles failures gracefully - if language system fails to load,
     the bot will still start normally without language support.
     
-    NOTE: This function should be called from tdata.py AFTER EnhancedBot is defined.
+    NOTE: This function should be called from main() in tdata.py, where tdata is already in sys.modules.
     """
     try:
-        # We're being called from tdata.py, so we need to get the EnhancedBot class
-        # from the caller's context
         import sys
-        import inspect
         
         print("🔧 inject_language_system: 开始注入...")
         
-        # Get the tdata module from sys.modules (it should be loaded by now)
-        tdata = None
-        if 'tdata' in sys.modules:
-            tdata = sys.modules['tdata']
-            print("🔧 inject_language_system: 从 sys.modules 获取 tdata")
-        else:
-            # Try to get from caller's frame
-            print("🔧 inject_language_system: tdata 不在 sys.modules,尝试其他方法")
-            frame = inspect.currentframe()
-            if frame and frame.f_back and frame.f_back.f_back:
-                caller_globals = frame.f_back.f_back.f_globals
-                if '__name__' in caller_globals and caller_globals['__name__'] == 'tdata':
-                    # We can access the caller's module directly
-                    # Import the module to get it into sys.modules
-                    try:
-                        import tdata as tdata_module
-                        tdata = tdata_module
-                        print("🔧 inject_language_system: 通过导入获取 tdata")
-                    except:
-                        pass
-        
-        if tdata is None:
-            print("⚠️ inject_language_system: 无法获取 tdata 模块引用")
-            logger.warning("⚠️ Could not get tdata module reference")
+        # Get the tdata module from sys.modules
+        # When called from main(), tdata is already fully loaded and in sys.modules
+        if 'tdata' not in sys.modules:
+            # This should not happen when called from main(), but handle it anyway
+            print("⚠️ inject_language_system: tdata 不在 sys.modules")
+            logger.warning("⚠️ tdata module not in sys.modules - injection must be called from main()")
             return False
+        
+        tdata = sys.modules['tdata']
+        print("🔧 inject_language_system: 从 sys.modules 获取 tdata ✓")
         
         # Get the EnhancedBot class
         if not hasattr(tdata, 'EnhancedBot'):
@@ -139,7 +121,7 @@ def inject_language_system():
             logger.warning("⚠️ EnhancedBot class not found in tdata module")
             return False
         
-        print("🔧 inject_language_system: 找到 EnhancedBot 类")
+        print("🔧 inject_language_system: 找到 EnhancedBot 类 ✓")
         EnhancedBot = tdata.EnhancedBot
         
         # Check if already wrapped (to avoid double-wrapping)
@@ -178,7 +160,7 @@ def inject_language_system():
         # Replace __init__
         EnhancedBot.__init__ = wrapped_init
         
-        print("✅ inject_language_system: __init__ 包装完成")
+        print("✅ inject_language_system: __init__ 包装完成 ✓")
         logger.info("✅ Language system injection complete")
         return True
         
