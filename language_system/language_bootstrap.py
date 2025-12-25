@@ -97,7 +97,7 @@ def inject_language_system():
     Handles failures gracefully - if language system fails to load,
     the bot will still start normally without language support.
     
-    NOTE: This function should be called from main() in tdata.py, where tdata is already in sys.modules.
+    NOTE: This function should be called from main() in tdata.py.
     """
     try:
         import sys
@@ -105,20 +105,28 @@ def inject_language_system():
         print("🔧 inject_language_system: 开始注入...")
         
         # Get the tdata module from sys.modules
-        # When called from main(), tdata is already fully loaded and in sys.modules
-        if 'tdata' not in sys.modules:
-            # This should not happen when called from main(), but handle it anyway
+        # When run as script (__name__ == '__main__'), the module is in sys.modules['__main__']
+        # When imported, it's in sys.modules['tdata']
+        tdata = None
+        
+        # Try to get from sys.modules as 'tdata' first
+        if 'tdata' in sys.modules:
+            tdata = sys.modules['tdata']
+            print("🔧 inject_language_system: 从 sys.modules['tdata'] 获取 ✓")
+        # If not found, try '__main__' (when run as script)
+        elif '__main__' in sys.modules:
+            tdata = sys.modules['__main__']
+            print("🔧 inject_language_system: 从 sys.modules['__main__'] 获取 ✓")
+        
+        if tdata is None:
             print("⚠️ inject_language_system: tdata 不在 sys.modules")
             logger.warning("⚠️ tdata module not in sys.modules - injection must be called from main()")
             return False
         
-        tdata = sys.modules['tdata']
-        print("🔧 inject_language_system: 从 sys.modules 获取 tdata ✓")
-        
         # Get the EnhancedBot class
         if not hasattr(tdata, 'EnhancedBot'):
-            print("⚠️ inject_language_system: tdata 模块中未找到 EnhancedBot 类")
-            logger.warning("⚠️ EnhancedBot class not found in tdata module")
+            print("⚠️ inject_language_system: 模块中未找到 EnhancedBot 类")
+            logger.warning("⚠️ EnhancedBot class not found in module")
             return False
         
         print("🔧 inject_language_system: 找到 EnhancedBot 类 ✓")
