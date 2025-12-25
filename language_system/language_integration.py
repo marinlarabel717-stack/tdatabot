@@ -57,21 +57,42 @@ class LanguageIntegration:
     
     def _register_handlers(self):
         """Register callback handlers for language switching."""
-        # Language selection handler
-        self.bot.updater.dispatcher.add_handler(
-            CallbackQueryHandler(
-                self.handle_language_select,
-                pattern=r'^lang_select$'
-            )
+        # Create language selection handler
+        lang_select_handler = CallbackQueryHandler(
+            self.handle_language_select,
+            pattern=r'^lang_select$'
         )
         
-        # Language change handler
-        self.bot.updater.dispatcher.add_handler(
-            CallbackQueryHandler(
-                self.handle_language_change,
-                pattern=r'^lang_set_\w+$'
-            )
+        # Create language change handler
+        lang_change_handler = CallbackQueryHandler(
+            self.handle_language_change,
+            pattern=r'^lang_set_\w+$'
         )
+        
+        # Insert handlers BEFORE the catch-all CallbackQueryHandler
+        # Find the position of the catch-all handler (the one without a pattern)
+        dispatcher = self.bot.updater.dispatcher
+        
+        # Get handlers for group 0 (default group)
+        handlers_list = dispatcher.handlers.get(0, [])
+        
+        # Find the index of the first CallbackQueryHandler without a pattern
+        catch_all_index = None
+        for i, handler in enumerate(handlers_list):
+            if isinstance(handler, CallbackQueryHandler) and handler.pattern is None:
+                catch_all_index = i
+                break
+        
+        # If we found a catch-all handler, insert our handlers before it
+        if catch_all_index is not None:
+            handlers_list.insert(catch_all_index, lang_select_handler)
+            handlers_list.insert(catch_all_index + 1, lang_change_handler)
+            logger.info(f"✅ Language handlers inserted at position {catch_all_index} (before catch-all)")
+        else:
+            # Otherwise, just add them normally (they'll be at the end)
+            dispatcher.add_handler(lang_select_handler)
+            dispatcher.add_handler(lang_change_handler)
+            logger.info("✅ Language handlers registered at end (no catch-all found)")
         
         logger.info("✅ Language handlers registered")
     
