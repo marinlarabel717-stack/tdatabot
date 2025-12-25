@@ -191,19 +191,20 @@ except ImportError:
     print("❌ Flask未安装（验证码网页功能不可用）")
 
 # ================================
-# 语言系统初始化
+# 语言系统初始化 (仅导入模块，注入将在 EnhancedBot 类定义后进行)
 # ================================
 try:
-    # 导入语言系统 - 会自动注入到 EnhancedBot
+    # 导入语言系统模块 (但不自动注入)
     import sys
     language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
     if language_system_path not in sys.path:
         sys.path.insert(0, language_system_path)
     
-    import language_bootstrap
-    print("✅ 语言系统已加载")
+    # 仅导入模块，注入将在 EnhancedBot 类定义后进行
+    # import language_bootstrap  # 不在这里导入，避免循环导入
+    print("✅ 语言系统路径已配置")
 except Exception as e:
-    print(f"⚠️ 语言系统加载失败: {e}")
+    print(f"⚠️ 语言系统配置失败: {e}")
     print("⚠️ 机器人将在没有语言切换功能的情况下继续运行")
 
 # ================================
@@ -21953,6 +21954,23 @@ admin3</code>
             print("\n👋 机器人已停止")
         except Exception as e:
             print(f"\n❌ 运行错误: {e}")
+
+# ================================
+# 语言系统注入 (在 EnhancedBot 类定义后)
+# ================================
+try:
+    import sys
+    language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
+    if language_system_path not in sys.path:
+        sys.path.insert(0, language_system_path)
+    
+    from language_bootstrap import inject_language_system
+    inject_language_system()
+    print("✅ 语言系统注入完成")
+except Exception as e:
+    print(f"⚠️ 语言系统注入失败: {e}")
+    import traceback
+    traceback.print_exc()
 
 # ================================
 # 创建示例代理文件

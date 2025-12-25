@@ -81,24 +81,49 @@ def inject_language_system():
     
     Handles failures gracefully - if language system fails to load,
     the bot will still start normally without language support.
+    
+    NOTE: This function should be called from tdata.py AFTER EnhancedBot is defined.
     """
     try:
-        # Add parent directory to path to import tdata
-        import os
+        # We're being called from tdata.py, so we need to get the EnhancedBot class
+        # from the caller's context
         import sys
-        parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        if parent_dir not in sys.path:
-            sys.path.insert(0, parent_dir)
+        import inspect
         
-        # Import the main module
-        import tdata
+        # Get the tdata module from sys.modules (it should be loaded by now)
+        tdata = None
+        if 'tdata' in sys.modules:
+            tdata = sys.modules['tdata']
+        else:
+            # Try to get from caller's frame
+            frame = inspect.currentframe()
+            if frame and frame.f_back and frame.f_back.f_back:
+                caller_globals = frame.f_back.f_back.f_globals
+                if '__name__' in caller_globals and caller_globals['__name__'] == 'tdata':
+                    # We can access the caller's module directly
+                    # Import the module to get it into sys.modules
+                    try:
+                        import tdata as tdata_module
+                        tdata = tdata_module
+                    except:
+                        pass
+        
+        if tdata is None:
+            logger.warning("⚠️ Could not get tdata module reference")
+            return False
         
         # Get the EnhancedBot class
         if not hasattr(tdata, 'EnhancedBot'):
-            logger.warning("⚠️ EnhancedBot class not found")
+            logger.warning("⚠️ EnhancedBot class not found in tdata module")
             return False
         
         EnhancedBot = tdata.EnhancedBot
+        
+        # Check if already wrapped (to avoid double-wrapping)
+        if hasattr(EnhancedBot.__init__, '_language_wrapped'):
+            logger.info("⚠️ EnhancedBot.__init__ already wrapped, skipping")
+            return True
+        
         original_init = EnhancedBot.__init__
         
         def wrapped_init(self, *args, **kwargs):
@@ -118,6 +143,9 @@ def inject_language_system():
                 traceback.print_exc()
                 # Don't re-raise - allow bot to continue
         
+        # Mark as wrapped to avoid double-wrapping
+        wrapped_init._language_wrapped = True
+        
         # Replace __init__
         EnhancedBot.__init__ = wrapped_init
         
@@ -132,7 +160,5 @@ def inject_language_system():
         return False
 
 
-# Auto-inject when this module is imported
-if __name__ != "__main__":
-    # Only inject if not running as main script
-    inject_language_system()
+# DO NOT auto-inject when this module is imported!
+# Instead, tdata.py will call inject_language_system() explicitly after EnhancedBot is defined
