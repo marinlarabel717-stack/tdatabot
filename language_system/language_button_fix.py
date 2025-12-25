@@ -107,10 +107,14 @@ def create_enhanced_menu_wrapper(original_method: Callable) -> Callable:
             )
             
             # Insert before the last row (typically "Status" button)
-            if buttons:
+            # If there are multiple rows, insert before the last one
+            # If there's only one row or no rows, append at the end
+            if len(buttons) > 1:
+                # Insert before last row
                 insert_pos = len(buttons) - 1
                 buttons.insert(insert_pos, [lang_button])
             else:
+                # Append at the end
                 buttons.append([lang_button])
             
             # Return new keyboard
@@ -130,7 +134,7 @@ def create_enhanced_menu_wrapper(original_method: Callable) -> Callable:
                 return original_edit(*args, **kwargs)
             
             query.edit_message_text = wrapped_edit
-            wrapped_methods.append(('callback_query', original_edit))
+            wrapped_methods.append(('callback_query', query, original_edit))
         
         # Wrap message.reply_text if present (for fresh messages)
         if hasattr(update, 'message') and update.message:
@@ -145,7 +149,7 @@ def create_enhanced_menu_wrapper(original_method: Callable) -> Callable:
                 return original_reply(*args, **kwargs)
             
             update.message.reply_text = wrapped_reply
-            wrapped_methods.append(('message', original_reply))
+            wrapped_methods.append(('message', update.message, original_reply))
         
         try:
             # Call the original method
@@ -155,12 +159,13 @@ def create_enhanced_menu_wrapper(original_method: Callable) -> Callable:
             logger.error(f"❌ Error in show_main_menu: {e}")
             raise
         finally:
-            # Restore original methods
-            for method_type, original in wrapped_methods:
-                if method_type == 'callback_query' and update.callback_query:
-                    update.callback_query.edit_message_text = original
-                elif method_type == 'message' and hasattr(update, 'message') and update.message:
-                    update.message.reply_text = original
+            # Restore original methods with proper pairing
+            for item in wrapped_methods:
+                method_type, obj, original = item
+                if method_type == 'callback_query':
+                    obj.edit_message_text = original
+                elif method_type == 'message':
+                    obj.reply_text = original
     
     return enhanced_show_main_menu
 
