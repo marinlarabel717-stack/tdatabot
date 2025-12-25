@@ -1,0 +1,53 @@
+{
+  "menu": {
+    "welcome": "🤖 欢迎使用Telegram账号检测机器人",
+    "select_language": "🌐 选择语言",
+    "account_check": "🚀 账号检测",
+    "format_conversion": "🔄 格式转换",
+    "change_2fa": "🔐 修改2FA",
+    "batch_create": "📦 批量创建",
+    "forget_2fa": "🔓 忘记2FA",
+    "remove_2fa": "❌ 删除2FA",
+    "add_2fa": "➕ 添加2FA",
+    "classify_account": "📦 账号拆分",
+    "api_conversion": "🔗 API转换",
+    "file_rename": "📝 文件重命名",
+    "account_merge": "🧩 账户合并",
+    "one_click_cleanup": "🧹 一键清理",
+    "reauthorize": "🔑 重新授权",
+    "check_registration": "🕰️ 查询注册时间",
+    "vip_menu": "💳 开通/兑换会员",
+    "admin_panel": "👑 管理员面板",
+    "proxy_management": "📡 代理管理",
+    "status": "⚙️ 状态",
+    "back_to_main": "🔙 返回主菜单"
+  },
+  "language": {
+    "changed": "✅ 语言已切换为中文",
+    "current": "当前语言：中文",
+    "select_prompt": "🌐 请选择您的语言：",
+    "available": "可用语言"
+  },
+  "status": {
+    "version": "版本",
+    "current_time": "当前时间",
+    "user_status": "用户状态",
+    "vip_status": "VIP状态",
+    "trial_user": "试用用户",
+    "trial_expires": "试用到期时间",
+    "permanent_vip": "永久VIP",
+    "vip_expires": "VIP到期时间",
+    "normal_user": "普通用户"
+  },
+  "common": {
+    "yes": "是",
+    "no": "否",
+    "cancel": "取消",
+    "confirm": "确认",
+    "success": "成功",
+    "failed": "失败",
+    "error": "错误",
+    "loading": "加载中...",
+    "please_wait": "请稍候..."
+  }
+}

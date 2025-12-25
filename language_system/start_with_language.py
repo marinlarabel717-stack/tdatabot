@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+TDataBot Launcher with Language Support
+This script initializes the language system before starting the bot
+"""
+
+import sys
+import os
+
+# Add parent directory to path so we can import tdata
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, parent_dir)
+
+# Add current directory to path for language_system imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
+
+print("🌐 ===== TDataBot with Language Support =====")
+print("🌐 Initializing language system...")
+
+# Import and inject language system BEFORE importing the main bot
+try:
+    import language_bootstrap
+    print("✅ Language system loaded")
+except Exception as e:
+    print(f"⚠️ Warning: Language system failed to load: {e}")
+    print("⚠️ Bot will continue without language support")
+
+# Now import and run the main bot
+print("🚀 Starting bot...")
+import tdata
+
+if __name__ == "__main__":
+    tdata.main()

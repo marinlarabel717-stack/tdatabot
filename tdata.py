@@ -191,6 +191,22 @@ except ImportError:
     print("❌ Flask未安装（验证码网页功能不可用）")
 
 # ================================
+# 语言系统初始化
+# ================================
+try:
+    # 导入语言系统 - 会自动注入到 EnhancedBot
+    import sys
+    language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
+    if language_system_path not in sys.path:
+        sys.path.insert(0, language_system_path)
+    
+    import language_bootstrap
+    print("✅ 语言系统已加载")
+except Exception as e:
+    print(f"⚠️ 语言系统加载失败: {e}")
+    print("⚠️ 机器人将在没有语言切换功能的情况下继续运行")
+
+# ================================
 # 数据结构定义
 # ================================
 
@@ -9068,6 +9084,25 @@ class EnhancedBot:
         buttons.append([
             InlineKeyboardButton("⚙️ 状态", callback_data="status")
         ])
+
+        # 语言切换按钮 (由语言系统添加)
+        try:
+            # 尝试添加语言选择按钮
+            import sys
+            import os
+            language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
+            if language_system_path not in sys.path:
+                sys.path.insert(0, language_system_path)
+            
+            from language_middleware import get_middleware
+            middleware = get_middleware()
+            lang_button_text = middleware.translate_for_user(user_id, "menu.select_language")
+            buttons.append([
+                InlineKeyboardButton(lang_button_text, callback_data="lang_select")
+            ])
+        except Exception as e:
+            # 如果语言系统不可用，静默失败
+            pass
 
         
         keyboard = InlineKeyboardMarkup(buttons)
