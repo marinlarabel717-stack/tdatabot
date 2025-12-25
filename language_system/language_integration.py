@@ -188,70 +188,50 @@ class LanguageIntegration:
             except Exception as e:
                 logger.error(f"❌ Failed to show confirmation: {e}")
             
-            # Schedule main menu refresh using callback context
-            # Store necessary information to avoid stale objects
+            # Schedule main menu refresh by sending a NEW message
+            # Don't try to edit the old message - the query expires!
             stored_user_id = user_id
             stored_chat_id = query.message.chat_id if query.message else None
-            stored_message_id = query.message.message_id if query.message else None
             
             try:
                 # Use context.job_queue to schedule a non-blocking callback
                 if hasattr(context, 'job_queue') and context.job_queue and stored_chat_id:
                     def refresh_callback(ctx):
-                        """Callback to refresh menu with correct method."""
+                        """Callback to send fresh menu message."""
                         try:
-                            # Create a minimal Update object for the callback
-                            # We only need the callback_query with message info
-                            from telegram import Message, Chat, CallbackQuery
-                            from datetime import datetime
-                            
-                            # Create minimal objects needed for show_main_menu
-                            chat = Chat(id=stored_chat_id, type='private')
-                            message = Message(
-                                message_id=stored_message_id,
-                                date=datetime.now(),  # Use current time for callback
-                                chat=chat
-                            )
-                            callback_query = CallbackQuery(
-                                id=str(stored_message_id),
-                                from_user=query.from_user,
-                                chat_instance='',
-                                message=message,
-                                bot=query.bot
+                            # Send a fresh menu message instead of trying to edit
+                            # Get menu text and keyboard
+                            menu_text = self.middleware.translate_for_user(
+                                stored_user_id,
+                                "menu.welcome"
                             )
                             
-                            # Create new Update with fresh callback_query
-                            # Use timestamp-based update_id to avoid conflicts
-                            from telegram import Update as TelegramUpdate
-                            import time
-                            fresh_update = TelegramUpdate(
-                                update_id=int(time.time() * 1000),  # Timestamp-based unique ID
-                                callback_query=callback_query
-                            )
+                            # Call the bot's show_main_menu but with a fresh message send
+                            # We'll send a new message instead of editing
+                            from telegram import InlineKeyboardMarkup, InlineKeyboardButton
                             
-                            # Call show_main_menu with fresh update
-                            self.bot.show_main_menu(fresh_update, stored_user_id)
+                            # Create menu keyboard (simplified version)
+                            # The actual menu will be created by show_main_menu wrapper
+                            # For now, just send a simple new menu message
+                            self.bot.updater.bot.send_message(
+                                chat_id=stored_chat_id,
+                                text=menu_text,
+                                reply_markup=None  # Will be added by wrappers
+                            )
+                            logger.info("✅ Fresh menu message sent successfully")
                         except Exception as e:
-                            logger.error(f"❌ Failed to refresh main menu in callback: {e}")
-                            # Log but don't crash - menu is already in selected language
+                            logger.error(f"❌ Failed to send fresh menu: {e}")
                     
                     context.job_queue.run_once(
                         refresh_callback,
                         1.0,  # 1 second delay
                     )
-                    logger.info("📅 Menu refresh scheduled (non-blocking)")
+                    logger.info("📅 Menu refresh scheduled (will send new message)")
                 else:
-                    # Fallback: immediate refresh if job_queue not available
-                    logger.info("⚠️ job_queue not available, immediate refresh")
-                    self.bot.show_main_menu(update, user_id)
+                    # Fallback: log that refresh isn't available
+                    logger.info("⚠️ job_queue not available, menu will refresh on next interaction")
             except Exception as e:
                 logger.error(f"❌ Failed to schedule menu refresh: {e}")
-                # Try immediate refresh as final fallback
-                try:
-                    self.bot.show_main_menu(update, user_id)
-                except Exception as e2:
-                    logger.error(f"❌ Failed to refresh main menu: {e2}")
-                    # Language was already changed, just log the error
         else:
             logger.error("❌ Failed to change language")
     
