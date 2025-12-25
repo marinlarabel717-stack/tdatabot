@@ -62,6 +62,7 @@
     "failed": "Failed",
     "error": "Error",
     "loading": "Loading...",
-    "please_wait": "Please wait..."
+    "please_wait": "Please wait...",
+    "unit_count": ""
   }
 }

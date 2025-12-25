@@ -62,6 +62,7 @@
     "failed": "失败",
     "error": "错误",
     "loading": "加载中...",
-    "please_wait": "请稍候..."
+    "please_wait": "请稍候...",
+    "unit_count": "个"
   }
 }

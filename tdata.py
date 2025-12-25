@@ -9090,7 +9090,7 @@ class EnhancedBot:
 
 <b>{t("menu.proxy_status")}</b>
 • {t("menu.proxy_mode")}: {proxy_mode_text}
-• {t("menu.proxy_count")}: {len(self.proxy_manager.proxies)}个
+• {t("menu.proxy_count")}: {len(self.proxy_manager.proxies)}{t("common.unit_count")}
 • {t("menu.current_time")}: {datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S CST')}
         """
         
