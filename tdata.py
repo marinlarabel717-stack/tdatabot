@@ -9056,7 +9056,8 @@ class EnhancedBot:
                     "menu.admin_panel": "👑 管理员面板",
                     "menu.proxy_management": "📡 代理管理",
                     "menu.status": "⚙️ 状态",
-                    "menu.select_language": "🌐 选择语言"
+                    "menu.select_language": "🌐 选择语言",
+                    "common.unit_count": "个"
                 }
                 return fallback_texts.get(key, key)
         
