@@ -9006,89 +9006,8 @@ class EnhancedBot:
     
     def show_main_menu(self, update: Update, user_id: int):
         """显示主菜单（统一方法）"""
-        # 获取用户信息
-        if update.callback_query:
-            first_name = update.callback_query.from_user.first_name or "用户"
-        else:
-            first_name = update.effective_user.first_name or "用户"
-        
-        # 获取会员状态（使用 check_membership 方法）
-        is_member, level, expiry = self.db.check_membership(user_id)
-        
-        if self.db.is_admin(user_id):
-            member_status = "👑 管理员"
-        elif is_member:
-            member_status = f"🎁 {level}"
-        else:
-            member_status = "❌ 无会员"
-        
-        welcome_text = f"""
-<b>🔍 Telegram账号机器人 V8.0</b>
-
-👤 <b>用户信息</b>
-• 昵称: {first_name}
-• ID: <code>{user_id}</code>
-• 会员: {member_status}
-• 到期: {expiry}
-
-📡 <b>代理状态</b>
-• 代理模式: {'🟢启用' if self.proxy_manager.is_proxy_mode_active(self.db) else '🔴本地连接'}
-• 代理数量: {len(self.proxy_manager.proxies)}个
-• 当前时间: {datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S CST')}
-        """
-        
-
-        # 创建横排2x2布局的主菜单按钮（在原有两行后新增一行"🔗 API转换"）
-        buttons = [
-            [
-                InlineKeyboardButton("🚀 账号检测", callback_data="start_check"),
-                InlineKeyboardButton("🔄 格式转换", callback_data="format_conversion")
-            ],
-            [
-                InlineKeyboardButton("🔐 修改2FA", callback_data="change_2fa"),
-                InlineKeyboardButton("📦 批量创建", callback_data="batch_create_start")
-            ],
-            [
-                InlineKeyboardButton("🔓 忘记2FA", callback_data="forget_2fa"),
-                InlineKeyboardButton("❌ 删除2FA", callback_data="remove_2fa")
-            ],
-            [
-                InlineKeyboardButton("➕ 添加2FA", callback_data="add_2fa"),
-                InlineKeyboardButton("📦 账号拆分", callback_data="classify_menu")
-            ],
-            [
-                InlineKeyboardButton("🔗 API转换", callback_data="api_conversion"),
-                InlineKeyboardButton("📝 文件重命名", callback_data="rename_start")
-            ],
-            [
-                InlineKeyboardButton("🧩 账户合并", callback_data="merge_start"),
-                InlineKeyboardButton("🧹 一键清理", callback_data="cleanup_start")
-            ],
-            [
-                InlineKeyboardButton("🔑 重新授权", callback_data="reauthorize_start"),
-                InlineKeyboardButton("🕰️ 查询注册时间", callback_data="check_registration_start")
-            ],
-            [
-                InlineKeyboardButton("💳 开通/兑换会员", callback_data="vip_menu")
-            ]
-        ]
-
-
-        # 管理员按钮
-        if self.db.is_admin(user_id):
-            buttons.append([
-                InlineKeyboardButton("👑 管理员面板", callback_data="admin_panel"),
-                InlineKeyboardButton("📡 代理管理", callback_data="proxy_panel")
-            ])
-
-        # 底部功能按钮（如果已把“帮助”放到第三行左侧，可将这里的帮助去掉或改为“⚙️ 状态”）
-        buttons.append([
-            InlineKeyboardButton("⚙️ 状态", callback_data="status")
-        ])
-
-        # 语言切换按钮 (由语言系统添加)
+        # 获取语言中间件进行翻译
         try:
-            # 尝试添加语言选择按钮
             import sys
             import os
             language_system_path = os.path.join(os.path.dirname(__file__), 'language_system')
@@ -9097,13 +9016,136 @@ class EnhancedBot:
             
             from language_middleware import get_middleware
             middleware = get_middleware()
-            lang_button_text = middleware.translate_for_user(user_id, "menu.select_language")
-            buttons.append([
-                InlineKeyboardButton(lang_button_text, callback_data="lang_select")
-            ])
+            
+            # 创建翻译函数
+            def t(key):
+                return middleware.translate_for_user(user_id, key)
         except Exception as e:
-            # 如果语言系统不可用，静默失败
-            pass
+            # 如果语言系统不可用，使用中文作为回退
+            def t(key):
+                fallback_texts = {
+                    "menu.title": "🔍 Telegram账号机器人 V8.0",
+                    "menu.user_info": "👤 用户信息",
+                    "menu.nickname": "昵称",
+                    "menu.member": "会员",
+                    "menu.expires": "到期",
+                    "menu.proxy_status": "📡 代理状态",
+                    "menu.proxy_mode": "代理模式",
+                    "menu.enabled": "🟢启用",
+                    "menu.local_connection": "🔴本地连接",
+                    "menu.proxy_count": "代理数量",
+                    "menu.current_time": "当前时间",
+                    "menu.default_user": "用户",
+                    "menu.admin": "👑 管理员",
+                    "menu.no_membership": "❌ 无会员",
+                    "menu.account_check": "🚀 账号检测",
+                    "menu.format_conversion": "🔄 格式转换",
+                    "menu.change_2fa": "🔐 修改2FA",
+                    "menu.batch_create": "📦 批量创建",
+                    "menu.forget_2fa": "🔓 忘记2FA",
+                    "menu.remove_2fa": "❌ 删除2FA",
+                    "menu.add_2fa": "➕ 添加2FA",
+                    "menu.classify_account": "📦 账号拆分",
+                    "menu.api_conversion": "🔗 API转换",
+                    "menu.file_rename": "📝 文件重命名",
+                    "menu.account_merge": "🧩 账户合并",
+                    "menu.one_click_cleanup": "🧹 一键清理",
+                    "menu.reauthorize": "🔑 重新授权",
+                    "menu.check_registration": "🕰️ 查询注册时间",
+                    "menu.vip_menu": "💳 开通/兑换会员",
+                    "menu.admin_panel": "👑 管理员面板",
+                    "menu.proxy_management": "📡 代理管理",
+                    "menu.status": "⚙️ 状态",
+                    "menu.select_language": "🌐 选择语言",
+                    "common.unit_count": "个"
+                }
+                return fallback_texts.get(key, key)
+        
+        # 获取用户信息
+        if update.callback_query:
+            first_name = update.callback_query.from_user.first_name or t("menu.default_user")
+        else:
+            first_name = update.effective_user.first_name or t("menu.default_user")
+        
+        # 获取会员状态（使用 check_membership 方法）
+        is_member, level, expiry = self.db.check_membership(user_id)
+        
+        if self.db.is_admin(user_id):
+            member_status = t("menu.admin")
+        elif is_member:
+            member_status = f"🎁 {level}"
+        else:
+            member_status = t("menu.no_membership")
+        
+        # 构建翻译后的欢迎文本
+        proxy_mode_text = t("menu.enabled") if self.proxy_manager.is_proxy_mode_active(self.db) else t("menu.local_connection")
+        
+        welcome_text = f"""
+<b>{t("menu.title")}</b>
+
+<b>{t("menu.user_info")}</b>
+• {t("menu.nickname")}: {first_name}
+• ID: <code>{user_id}</code>
+• {t("menu.member")}: {member_status}
+• {t("menu.expires")}: {expiry}
+
+<b>{t("menu.proxy_status")}</b>
+• {t("menu.proxy_mode")}: {proxy_mode_text}
+• {t("menu.proxy_count")}: {len(self.proxy_manager.proxies)}{t("common.unit_count")}
+• {t("menu.current_time")}: {datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S CST')}
+        """
+        
+
+        # 创建横排2x2布局的主菜单按钮（使用翻译）
+        buttons = [
+            [
+                InlineKeyboardButton(t("menu.account_check"), callback_data="start_check"),
+                InlineKeyboardButton(t("menu.format_conversion"), callback_data="format_conversion")
+            ],
+            [
+                InlineKeyboardButton(t("menu.change_2fa"), callback_data="change_2fa"),
+                InlineKeyboardButton(t("menu.batch_create"), callback_data="batch_create_start")
+            ],
+            [
+                InlineKeyboardButton(t("menu.forget_2fa"), callback_data="forget_2fa"),
+                InlineKeyboardButton(t("menu.remove_2fa"), callback_data="remove_2fa")
+            ],
+            [
+                InlineKeyboardButton(t("menu.add_2fa"), callback_data="add_2fa"),
+                InlineKeyboardButton(t("menu.classify_account"), callback_data="classify_menu")
+            ],
+            [
+                InlineKeyboardButton(t("menu.api_conversion"), callback_data="api_conversion"),
+                InlineKeyboardButton(t("menu.file_rename"), callback_data="rename_start")
+            ],
+            [
+                InlineKeyboardButton(t("menu.account_merge"), callback_data="merge_start"),
+                InlineKeyboardButton(t("menu.one_click_cleanup"), callback_data="cleanup_start")
+            ],
+            [
+                InlineKeyboardButton(t("menu.reauthorize"), callback_data="reauthorize_start"),
+                InlineKeyboardButton(t("menu.check_registration"), callback_data="check_registration_start")
+            ],
+            [
+                InlineKeyboardButton(t("menu.vip_menu"), callback_data="vip_menu")
+            ]
+        ]
+
+
+        # 管理员按钮（使用翻译）
+        if self.db.is_admin(user_id):
+            buttons.append([
+                InlineKeyboardButton(t("menu.admin_panel"), callback_data="admin_panel"),
+                InlineKeyboardButton(t("menu.proxy_management"), callback_data="proxy_panel")
+            ])
+
+        # 底部功能按钮（如果已把“帮助”放到第三行左侧，可将这里的帮助去掉或改为“⚙️ 状态”）
+        buttons.append([
+            InlineKeyboardButton(t("menu.status"), callback_data="status")
+        ])
+
+        # 语言切换按钮 (由语言系统添加)
+        # 注意：这个按钮会被 language_button_fix 模块自动添加，这里不再手动添加
 
         
         keyboard = InlineKeyboardMarkup(buttons)

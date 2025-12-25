@@ -1,6 +1,20 @@
 {
   "menu": {
     "welcome": "🤖 Bienvenido al Bot de Detección de Cuentas de Telegram",
+    "title": "🔍 Telegram Account Bot V8.0",
+    "user_info": "👤 Información del Usuario",
+    "nickname": "Nombre",
+    "member": "Membresía",
+    "expires": "Expira",
+    "proxy_status": "📡 Estado del Proxy",
+    "proxy_mode": "Modo Proxy",
+    "enabled": "🟢 Habilitado",
+    "local_connection": "🔴 Conexión Local",
+    "proxy_count": "Cantidad de Proxies",
+    "current_time": "Hora Actual",
+    "default_user": "Usuario",
+    "admin": "👑 Administrador",
+    "no_membership": "❌ Sin Membresía",
     "select_language": "🌐 Seleccionar Idioma",
     "account_check": "🚀 Verificación de Cuenta",
     "format_conversion": "🔄 Conversión de Formato",
@@ -48,6 +62,7 @@
     "failed": "Fallido",
     "error": "Error",
     "loading": "Cargando...",
-    "please_wait": "Por favor espera..."
+    "please_wait": "Por favor espera...",
+    "unit_count": ""
   }
 }

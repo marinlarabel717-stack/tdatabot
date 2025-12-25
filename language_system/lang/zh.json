@@ -1,6 +1,20 @@
 {
   "menu": {
     "welcome": "🤖 欢迎使用Telegram账号检测机器人",
+    "title": "🔍 Telegram账号机器人 V8.0",
+    "user_info": "👤 用户信息",
+    "nickname": "昵称",
+    "member": "会员",
+    "expires": "到期",
+    "proxy_status": "📡 代理状态",
+    "proxy_mode": "代理模式",
+    "enabled": "🟢启用",
+    "local_connection": "🔴本地连接",
+    "proxy_count": "代理数量",
+    "current_time": "当前时间",
+    "default_user": "用户",
+    "admin": "👑 管理员",
+    "no_membership": "❌ 无会员",
     "select_language": "🌐 选择语言",
     "account_check": "🚀 账号检测",
     "format_conversion": "🔄 格式转换",
@@ -48,6 +62,7 @@
     "failed": "失败",
     "error": "错误",
     "loading": "加载中...",
-    "please_wait": "请稍候..."
+    "please_wait": "请稍候...",
+    "unit_count": "个"
   }
 }
